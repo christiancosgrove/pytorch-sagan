@@ -1,3 +1,7 @@
+# Self-attention GAN implementation by Christian Cosgrove
+# Based on the paper by Zhang et al.
+# https://arxiv.org/abs/1805.08318
+
 # DCGAN-like generator and discriminator
 from torch import nn
 import torch.nn.functional as F
@@ -58,6 +62,8 @@ class Discriminator(nn.Module):
         self.conv3 = SpectralNorm(nn.Conv2d(64, 128, 3, stride=1, padding=(1,1)))
         self.conv4 = SpectralNorm(nn.Conv2d(128, 128, 4, stride=2, padding=(1,1)))
 
+
+        #attention layers
         self.f = SpectralNorm(nn.Conv2d(128, attention_size, 1, stride=1))
         self.g = SpectralNorm(nn.Conv2d(128, attention_size, 1, stride=1))
         self.h = SpectralNorm(nn.Conv2d(128, attention_size, 1, stride=1))

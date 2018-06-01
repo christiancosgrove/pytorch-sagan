@@ -1,3 +1,8 @@
+# Self-attention GAN implementation by Christian Cosgrove
+# Fork of PyTorch core batch normalization
+# Based on the paper by Zhang et al.
+# https://arxiv.org/abs/1805.08318
+
 import torch
 from torch.nn import Module
 from torch.nn.parameter import Parameter
@@ -58,8 +63,15 @@ class _ConditionalBatchNorm(Module):
             else:  # use exponential moving average
                 exponential_average_factor = self.momentum
 
+
+        # print('running_mean', self.running_mean.size())
+        # print('label ', label.size())
+
+        # reshaped label
+        slabel = label.view(1, -1)
+
         return F.batch_norm(
-            input, self.running_mean[label], self.running_var[label], self.weight[label], self.bias[label],
+            input, slabel.mm(self.running_mean), slabel.mm(self.running_var), slabel.mm(self.weight), slabel.mm(self.bias),
             self.training or not self.track_running_stats,
             exponential_average_factor, self.eps)
 

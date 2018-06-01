@@ -1,3 +1,7 @@
+# Self-attention GAN implementation by Christian Cosgrove
+# Based on the paper by Zhang et al.
+# https://arxiv.org/abs/1805.08318
+
 import argparse
 import torch
 import torch.nn as nn
@@ -82,7 +86,7 @@ def train(epoch):
             optim_disc.zero_grad()
             optim_gen.zero_grad()
 
-            disc_loss = (nn.ReLU()(1.0 - discriminator(data_selected, rand_c_onehot))).mean() + (nn.ReLU()(1.0 + discriminator(generator(z, rand_class), rand_c_onehot))).mean()
+            disc_loss = (nn.ReLU()(1.0 - discriminator(data_selected, rand_c_onehot))).mean() + (nn.ReLU()(1.0 + discriminator(generator(z, rand_c_onehot[0]), rand_c_onehot))).mean()
 
             disc_loss.backward()
             optim_disc.step()
@@ -92,7 +96,7 @@ def train(epoch):
         # update generator
         optim_disc.zero_grad()
         optim_gen.zero_grad()
-        gen_loss = -discriminator(generator(z, rand_class), rand_c_onehot).mean()
+        gen_loss = -discriminator(generator(z, rand_c_onehot[0]), rand_c_onehot).mean()
         gen_loss.backward()
         optim_gen.step()
 
@@ -114,7 +118,11 @@ def evaluate(epoch):
 
     for fixed_class in range(num_classes):
 
-        samples = generator(fixed_z, fixed_class).cpu().data.numpy()[:64]
+        fixed_c_onehot = torch.FloatTensor(args.batch_size, num_classes).cuda()
+        fixed_c_onehot.zero_()
+        fixed_c_onehot[:, fixed_class] = 1
+
+        samples = generator(fixed_z, fixed_c_onehot[0]).cpu().data.numpy()[:64]
         fig = plt.figure(figsize=(8, 8))
         gs = gridspec.GridSpec(8, 8)
         gs.update(wspace=0.05, hspace=0.05)

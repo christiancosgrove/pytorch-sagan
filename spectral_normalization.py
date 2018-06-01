@@ -1,3 +1,6 @@
+# Spectral normalization implementation by Christian Cosgrove
+# Based on the paper by Miyato et al. https://arxiv.org/abs/1802.05957
+
 import torch
 from torch.optim.optimizer import Optimizer, required
 
