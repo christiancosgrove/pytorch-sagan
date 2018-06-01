@@ -18,11 +18,12 @@ import os
 
 num_classes = 10
 
-batch_size_mult = 4
+batch_size_mult = 10
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--batch_size', type=int, default=64)
-parser.add_argument('--lr', type=float, default=1e-4)
+parser.add_argument('--batch_size', type=int, default=32)
+parser.add_argument('--lr_gen', type=float, default=1e-4)
+parser.add_argument('--lr_disc', type=float, default=4e-4)
 parser.add_argument('--loss', type=str, default='hinge')
 parser.add_argument('--checkpoint_dir', type=str, default='checkpoints')
 
@@ -43,7 +44,7 @@ loader = torch.utils.data.DataLoader(
 
 Z_dim = 128
 #number of updates to discriminator for every update to generator 
-disc_iters = 2
+disc_iters = 1
 
 # discriminator = torch.nn.DataParallel(Discriminator()).cuda() # TODO: try out multi-gpu training
 # if args.model == 'resnet':
@@ -56,8 +57,8 @@ generator = model.Generator(Z_dim).cuda()
 # because the spectral normalization module creates parameters that don't require gradients (u and v), we don't want to 
 # optimize these using sgd. We only let the optimizer operate on parameters that _do_ require gradients
 # TODO: replace Parameters with buffers, which aren't returned from .parameters() method.
-optim_disc = optim.Adam(filter(lambda p: p.requires_grad, discriminator.parameters()), lr=args.lr, betas=(0.0,0.9))
-optim_gen  = optim.Adam(filter(lambda p: p.requires_grad, generator.parameters()), lr=args.lr, betas=(0.0,0.9))
+optim_disc = optim.Adam(filter(lambda p: p.requires_grad, discriminator.parameters()), lr=args.lr_disc, betas=(0.0,0.9))
+optim_gen  = optim.Adam(filter(lambda p: p.requires_grad, generator.parameters()), lr=args.lr_gen, betas=(0.0,0.9))
 
 # use an exponentially decaying learning rate
 scheduler_d = optim.lr_scheduler.ExponentialLR(optim_disc, gamma=0.99)
@@ -81,7 +82,7 @@ def train(epoch):
             optim_disc.zero_grad()
             optim_gen.zero_grad()
 
-            disc_loss = nn.ReLU()(1.0 - discriminator(data_selected, rand_c_onehot)).mean() + nn.ReLU()(1.0 + discriminator(generator(z, rand_class), rand_c_onehot)).mean()
+            disc_loss = (nn.ReLU()(1.0 - discriminator(data_selected, rand_c_onehot))).mean() + (nn.ReLU()(1.0 + discriminator(generator(z, rand_class), rand_c_onehot))).mean()
 
             disc_loss.backward()
             optim_disc.step()
@@ -136,7 +137,8 @@ os.makedirs(args.checkpoint_dir, exist_ok=True)
 
 for epoch in range(2000):
     train(epoch)
-    evaluate(epoch)
+    if epoch % 20==0:
+        evaluate(epoch)
     torch.save(discriminator.state_dict(), os.path.join(args.checkpoint_dir, 'disc_{}'.format(epoch)))
     torch.save(generator.state_dict(), os.path.join(args.checkpoint_dir, 'gen_{}'.format(epoch)))
 

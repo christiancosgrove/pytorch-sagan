@@ -45,6 +45,9 @@ class Generator(nn.Module):
 
         return x
 
+
+attention_size = 8
+
 class Discriminator(nn.Module):
     def __init__(self):
         super(Discriminator, self).__init__()
@@ -54,12 +57,19 @@ class Discriminator(nn.Module):
         self.conv2 = SpectralNorm(nn.Conv2d(64, 64, 4, stride=2, padding=(1,1)))
         self.conv3 = SpectralNorm(nn.Conv2d(64, 128, 3, stride=1, padding=(1,1)))
         self.conv4 = SpectralNorm(nn.Conv2d(128, 128, 4, stride=2, padding=(1,1)))
+
+        self.f = SpectralNorm(nn.Conv2d(128, attention_size, 1, stride=1))
+        self.g = SpectralNorm(nn.Conv2d(128, attention_size, 1, stride=1))
+        self.h = SpectralNorm(nn.Conv2d(128, attention_size, 1, stride=1))
+        self.i = SpectralNorm(nn.Conv2d(attention_size, 128, 1, stride=1))
+
         self.conv5 = SpectralNorm(nn.Conv2d(128, 256, 3, stride=1, padding=(1,1)))
         self.conv6 = SpectralNorm(nn.Conv2d(256, 256, 4, stride=2, padding=(1,1)))
         self.conv7 = SpectralNorm(nn.Conv2d(256, 512, 3, stride=1, padding=(1,1)))
 
         self.embed = SpectralNorm(nn.Linear(num_classes, w_g * w_g * 512))
 
+        self.gamma = nn.Parameter(torch.tensor(0.))
 
         self.fc = SpectralNorm(nn.Linear(w_g * w_g * 512, 1))
 
@@ -69,6 +79,15 @@ class Discriminator(nn.Module):
         m = nn.LeakyReLU(leak)(self.conv2(m))
         m = nn.LeakyReLU(leak)(self.conv3(m))
         m = nn.LeakyReLU(leak)(self.conv4(m))
+
+        f = self.f(m)
+        g = self.g(m)
+        att = torch.bmm(torch.transpose(f.view(-1, 8 * 8, attention_size), 1, 2), g.view(-1, 8 * 8, attention_size))
+
+        h = self.gamma * self.h(m)
+        h = att.view(-1, 8, 8, 1).expand_as(h) + h
+        m = self.i(h) + m
+
         m = nn.LeakyReLU(leak)(self.conv5(m))
         m = nn.LeakyReLU(leak)(self.conv6(m))
         m = nn.LeakyReLU(leak)(self.conv7(m))
