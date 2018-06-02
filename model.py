@@ -8,6 +8,10 @@ import torch.nn.functional as F
 import torch
 from spectral_normalization import SpectralNorm
 from conditional_batch_norm import ConditionalBatchNorm2d
+from self_attention import SelfAttention
+from self_attention import SelfAttentionPost
+
+
 
 channels = 3
 leak = 0.1
@@ -61,7 +65,9 @@ class Discriminator(nn.Module):
         self.conv3 = SpectralNorm(nn.Conv2d(64, 128, 3, stride=1, padding=(1,1)))
         self.conv4 = SpectralNorm(nn.Conv2d(128, 128, 4, stride=2, padding=(1,1)))
 
-        self.att = SelfAttention(8)
+        self.attention_size = 16
+        self.att = SelfAttention(128, self.attention_size)
+        self.att_post = SelfAttentionPost(128, self.attention_size)
 
         self.conv5 = SpectralNorm(nn.Conv2d(128, 256, 3, stride=1, padding=(1,1)))
         self.conv6 = SpectralNorm(nn.Conv2d(256, 256, 4, stride=2, padding=(1,1)))
@@ -79,12 +85,14 @@ class Discriminator(nn.Module):
         m = nn.LeakyReLU(leak)(self.conv3(m))
         m = nn.LeakyReLU(leak)(self.conv4(m))
 
-        m = self.att(m)
+        self.attention_output = self.att(m)
+
+        m = self.att_post(m, self.attention_output)
 
         m = nn.LeakyReLU(leak)(self.conv5(m))
         m = nn.LeakyReLU(leak)(self.conv6(m))
         m = nn.LeakyReLU(leak)(self.conv7(m))
-        m = m.view(-1,w_g * w_g * 512)
+        m = m.view(-1, w_g * w_g * 512)
 
 
         return self.fc(m) + torch.bmm(m.view(-1, 1, w_g * w_g * 512), self.embed(c).view(-1, w_g * w_g * 512, 1))
