@@ -130,7 +130,7 @@ def evaluate(epoch):
         fixed_c_onehot.zero_()
         fixed_c_onehot[:, fixed_class] = 1
 
-        samples = generator(fixed_z, fixed_c_onehot[0]).cpu().data.numpy()[:64]
+        samples = generator(fixed_z, fixed_c_onehot[0]).cpu().detach().numpy()[:64]
         fig = plt.figure(figsize=(8, 8))
         gs = gridspec.GridSpec(8, 8)
         gs.update(wspace=0.05, hspace=0.05)
