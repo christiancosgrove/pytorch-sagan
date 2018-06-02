@@ -110,8 +110,8 @@ def train(epoch):
 
         if batch_idx % 100 == 99:
             print('disc loss', disc_loss.data[0], 'gen loss', gen_loss.data[0])
-    # scheduler_d.step()
-    # scheduler_g.step()
+    scheduler_d.step()
+    scheduler_g.step()
 
 fixed_z = torch.randn(args.batch_size, Z_dim).cuda()
 
@@ -153,8 +153,8 @@ os.makedirs(args.checkpoint_dir, exist_ok=True)
 
 for epoch in range(2000):
     train(epoch)
-    if epoch % 20==0:
+    if epoch % 20 == 0:
         evaluate(epoch)
-    torch.save(discriminator.state_dict(), os.path.join(args.checkpoint_dir, 'disc_{}'.format(epoch)))
-    torch.save(generator.state_dict(), os.path.join(args.checkpoint_dir, 'gen_{}'.format(epoch)))
+        torch.save(discriminator.state_dict(), os.path.join(args.checkpoint_dir, 'disc_{}'.format(epoch)))
+        torch.save(generator.state_dict(), os.path.join(args.checkpoint_dir, 'gen_{}'.format(epoch)))
 

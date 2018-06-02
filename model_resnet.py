@@ -1,3 +1,7 @@
+# Self-attention GAN implementation by Christian Cosgrove
+# Based on the paper by Zhang et al.
+# https://arxiv.org/abs/1805.08318
+
 # ResNet generator and discriminator
 from torch import nn
 import torch.nn.functional as F

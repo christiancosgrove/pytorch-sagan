@@ -12,6 +12,8 @@ import os
 import numpy as np
 
 import scipy.misc
+from glob import glob
+import imageio
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--batch_size', type=int, default=32)
@@ -29,14 +31,21 @@ generator.load_state_dict(cp_gen)
 print('Loaded checkpoint (epoch {})'.format(args.load))
 
 
-label1 = torch.zeros(num_classes).cuda()
-label1[4] = 1
-label2 = torch.zeros(num_classes).cuda()
-label2[7] = 1
+labels = [torch.zeros(num_classes).cuda() for i in range(num_classes)]
+for i in range(num_classes):
+	labels[i][i] = 1
 
-z = torch.randn(1, Z_dim).cuda()
+z = torch.randn(64, Z_dim).cuda()
 
-for x in np.arange(0, 1, 0.01):
-	image = generator(z, label1 * x + label2 * (1.0 - x)).cpu().detach().numpy()[0]
-	print('image, ', image.shape)
-	scipy.misc.imsave('images/test{0:.2f}.png'.format(x), image.transpose((1,2,0)))
+
+for i in range(num_classes - 1):
+	for x in np.arange(0, 1, 0.05):
+		image = generator(z, labels[i + 1] * x + labels[i] * (1.0 - x))
+		image = image.view(8, 8, 3, 32, 32).permute(2, 0, 3, 1, 4).contiguous().view(3, 8 * 32, 8 * 32)
+		image = image.cpu().detach().numpy()
+		scipy.misc.imsave('images/test{0:.2f}.png'.format(i + x), image.transpose((1,2,0)))
+
+# make animated gif
+with imageio.get_writer('interpolate.gif', mode='I') as writer:
+	for filename in sorted(glob('images/*.png'), key=os.path.getmtime):
+		writer.append_data(imageio.imread(filename))
