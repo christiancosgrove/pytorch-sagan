@@ -5,7 +5,7 @@ Based on the [arXiv preprint by Zhang et al.](https://arxiv.org/abs/1805.08318).
 This repository is a fork of my [PyTorch spectral normalization implementation](https://github.com/christiancosgrove/pytorch-spectral-normalization-gan).
 
 ## CIFAR-10 Class-Conditional Samples (preliminary)
-![airplane](https://github.com/christiancosgrove/pytorch-sagan/blob/master/180_00.png?raw=true)
+![airplane](https://github.com/christiancosgrove/pytorch-sagan/blob/master/1780_00.png?raw=true)
 
 ![car](https://github.com/christiancosgrove/pytorch-sagan/blob/master/1780_01.png?raw=true)
 
@@ -25,4 +25,4 @@ This repository is a fork of my [PyTorch spectral normalization implementation](
 
 ![truck](https://github.com/christiancosgrove/pytorch-sagan/blob/master/1780_09.png?raw=true)
 
-![class interpolation](https://github.com/christiancosgrove/pytorch-sagan/blob/master/interpolation.gif?raw=true)
+![class interpolation](https://github.com/christiancosgrove/pytorch-sagan/blob/master/interpolate.gif?raw=true)
