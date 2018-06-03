@@ -43,16 +43,35 @@ for i in range(num_classes):
 z = torch.randn(64, Z_dim).cuda()
 
 
-for i in range(num_classes - 1):
-	for x in np.arange(0, 1, 0.05):
-		label = labels[i + 1] * x + labels[i] * (1.0 - x)
+for i in range(num_classes):
+	for x in np.arange(0, 1, 0.01):
+
+		# smooth polynomial to spend more time at endpoints of classes
+		xp = x**9 - x**8 / 2 + 6 * x**7 / 7 - 2 * x**6 / 3 + x**5 / 5
+
+		# interpolated one-hot labels to be passed into conditional batch norm layer
+		label = labels[(i + 1) % num_classes] * xp + labels[i] * (1.0 - xp)
 		image = generator(z, label)
 		if args.attention:
 			discriminator(image, label.unsqueeze(0).expand(64, -1))
 			attention = discriminator.attention_output
-			upsample = nn.Upsample(scale_factor=4)(attention)
+
+			print('attention_output', attention.size())
+			upsample = nn.Upsample(scale_factor=4)(attention[0].view(64, 1, 8, 8))
 			print('size', upsample.size())
-			image = image * upsample[:, 0, :, :].view(64, 1, 32, 32).expand_as(image)
+			aimage = upsample.expand_as(image)
+			aimage = aimage * aimage
+			aimage = aimage / (aimage.mean())
+			aimage = aimage * aimage
+			aimage = aimage / (aimage.mean())
+			aimage = aimage * aimage
+			aimage = aimage / (aimage.mean())
+			aimage = aimage * aimage
+			aimage = aimage / (aimage.mean())
+			aimage = aimage * aimage
+			aimage = aimage / (aimage.mean())
+			image = aimage.expand_as(image)
+
 
 		npimage = image.view(8, 8, 3, 32, 32).permute(2, 0, 3, 1, 4).contiguous().view(3, 8 * 32, 8 * 32)
 		npimage = npimage.cpu().detach().numpy()
@@ -60,6 +79,6 @@ for i in range(num_classes - 1):
 		scipy.misc.imsave('images/test{0:.2f}.png'.format(i + x), npimage.transpose((1,2,0)))
 
 # make animated gif
-with imageio.get_writer('interpolate.gif', mode='I') as writer:
+with imageio.get_writer('interpolate.gif' if not args.attention else "attention.gif", mode='I') as writer:
 	for filename in sorted(glob('images/*.png'), key=os.path.getmtime):
 		writer.append_data(imageio.imread(filename))

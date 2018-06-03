@@ -11,6 +11,7 @@ from torch.optim.lr_scheduler import ExponentialLR
 from torchvision import datasets, transforms
 from torch.autograd import Variable
 import model
+import model_resnet
 
 import numpy as np
 import matplotlib
@@ -27,11 +28,10 @@ batch_size_mult = 10
 parser = argparse.ArgumentParser()
 parser.add_argument('--batch_size', type=int, default=32)
 parser.add_argument('--lr_gen', type=float, default=1e-4)
-parser.add_argument('--lr_disc', type=float, default=2e-4)
+parser.add_argument('--lr_disc', type=float, default=4e-4)
 parser.add_argument('--loss', type=str, default='hinge')
 parser.add_argument('--checkpoint_dir', type=str, default='checkpoints')
 parser.add_argument('--load', type=str)
-parser.add_argument('--model', type=str, default='resnet')
 
 args = parser.parse_args()
 
@@ -73,8 +73,8 @@ optim_disc = optim.Adam(filter(lambda p: p.requires_grad, discriminator.paramete
 optim_gen  = optim.Adam(filter(lambda p: p.requires_grad, generator.parameters()), lr=args.lr_gen, betas=(0.0,0.9))
 
 # use an exponentially decaying learning rate
-scheduler_d = optim.lr_scheduler.ExponentialLR(optim_disc, gamma=0.99)
-scheduler_g = optim.lr_scheduler.ExponentialLR(optim_gen, gamma=0.99)
+scheduler_d = optim.lr_scheduler.ExponentialLR(optim_disc, gamma=0.999)
+scheduler_g = optim.lr_scheduler.ExponentialLR(optim_gen, gamma=0.999)
 
 def train(epoch):
     for batch_idx, (data, target) in enumerate(loader):
@@ -110,7 +110,6 @@ def train(epoch):
 
         if batch_idx % 100 == 99:
             print('disc loss', disc_loss.data[0], 'gen loss', gen_loss.data[0])
-            break
     scheduler_d.step()
     scheduler_g.step()
 
@@ -154,7 +153,7 @@ os.makedirs(args.checkpoint_dir, exist_ok=True)
 
 for epoch in range(2000):
     train(epoch)
-    if epoch % 2 == 0:
+    if epoch % 20 == 0:
         evaluate(epoch)
         torch.save(discriminator.state_dict(), os.path.join(args.checkpoint_dir, 'disc_{}'.format(epoch)))
         torch.save(generator.state_dict(), os.path.join(args.checkpoint_dir, 'gen_{}'.format(epoch)))
