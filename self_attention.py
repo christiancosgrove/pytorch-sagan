@@ -21,8 +21,8 @@ class SelfAttentionPost(nn.Module):
         height = x.size(3)
         m = x
         h = self.gamma * self.h(m)
-        h = h.permute(0, 2, 3, 1).contiguous().view(-1, self.attention_size)
-        h = torch.mm(att, h)
+        h = h.permute(0, 2, 3, 1).contiguous().view(-1, width * height, self.attention_size)
+        h = torch.bmm(att, h)
         h = h.view(-1, width, height, self.attention_size).permute(0, 3, 1, 2)
         m = self.i(h) + m
         return m
@@ -45,11 +45,9 @@ class SelfAttention(nn.Module):
         channels = x.size(1)
         m = x
         f = self.f(m)
-        f = torch.transpose(f.view(-1, self.attention_size, width * height), 1, 2).contiguous()
+        f = torch.transpose(f.view(-1, self.attention_size, width * height), 1, 2)
         g = self.g(m)
-        g = torch.transpose(g.view(-1, self.attention_size, width * height), 0, 1).contiguous()
-        att = torch.mm(
-            f.view(-1, self.attention_size),
-            g.view(self.attention_size, -1))
+        g = g.view(-1, self.attention_size, width * height)
+        att = torch.bmm(f, g)
 
         return F.softmax(att, 1)

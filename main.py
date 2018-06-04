@@ -33,6 +33,7 @@ parser.add_argument('--lr_disc', type=float, default=2e-4)
 parser.add_argument('--loss', type=str, default='hinge')
 parser.add_argument('--checkpoint_dir', type=str, default='checkpoints')
 parser.add_argument('--load', type=str)
+parser.add_argument('--model', type=str)
 
 args = parser.parse_args()
 
