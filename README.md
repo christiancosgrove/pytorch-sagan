@@ -6,14 +6,20 @@ This repository is a fork of my [PyTorch spectral normalization implementation](
 
 
 Fashion MNIST
+
 ![class interpolation](https://github.com/christiancosgrove/pytorch-sagan/blob/master/interpolate_fashion.gif?raw=true)
 
 Discriminator self-attention visualization
+
 ![attention interpolation](https://github.com/christiancosgrove/pytorch-sagan/blob/master/attention_fashion.gif?raw=true)
 
 CIFAR-10
+
 ![class interpolation](https://github.com/christiancosgrove/pytorch-sagan/blob/master/interpolate.gif?raw=true)
+
+
 Discriminator self-attention visualization
+
 ![attention interpolation](https://github.com/christiancosgrove/pytorch-sagan/blob/master/attention.gif?raw=true)
 
 ## CIFAR-10 Class-Conditional Samples (preliminary)

@@ -27,7 +27,7 @@ num_classes = 10
 batch_size_mult = 10
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--batch_size', type=int, default=32)
+parser.add_argument('--batch_size', type=int, default=64)
 parser.add_argument('--lr_gen', type=float, default=1e-4)
 parser.add_argument('--lr_disc', type=float, default=2e-4)
 parser.add_argument('--loss', type=str, default='hinge')
@@ -49,7 +49,7 @@ loader = torch.utils.data.DataLoader(
 
 Z_dim = 128
 #number of updates to discriminator for every update to generator 
-disc_iters = 3
+disc_iters = 1
 
 # discriminator = torch.nn.DataParallel(Discriminator()).cuda() # TODO: try out multi-gpu training
 # if args.model == 'resnet':

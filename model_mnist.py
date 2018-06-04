@@ -24,15 +24,15 @@ class Generator(nn.Module):
         super(Generator, self).__init__()
         self.z_dim = z_dim
 
-        self.conv1 = (nn.ConvTranspose2d(z_dim, 512, 4, stride=1))
+        self.conv1 = SpectralNorm(nn.ConvTranspose2d(z_dim, 512, 4, stride=1))
         self.bn1 = ConditionalBatchNorm2d(512, num_classes)
-        self.conv2 = (nn.ConvTranspose2d(512, 256, 4, stride=2, padding=(1,1)))
+        self.conv2 = SpectralNorm(nn.ConvTranspose2d(512, 256, 4, stride=2, padding=(1,1)))
         self.bn2 = ConditionalBatchNorm2d(256, num_classes)
-        self.conv3 = (nn.ConvTranspose2d(256, 128, 4, stride=2, padding=(2,2)))
+        self.conv3 = SpectralNorm(nn.ConvTranspose2d(256, 128, 4, stride=2, padding=(2,2)))
         self.bn3 = ConditionalBatchNorm2d(128, num_classes)
-        self.conv4 = (nn.ConvTranspose2d(128, 64, 4, stride=2, padding=(1,1)))
+        self.conv4 = SpectralNorm(nn.ConvTranspose2d(128, 64, 4, stride=2, padding=(1,1)))
         self.bn4 = ConditionalBatchNorm2d(64, num_classes)
-        self.conv5 = (nn.Conv2d(64, channels, 3, stride=1, padding=(1,1)))
+        self.conv5 = SpectralNorm(nn.Conv2d(64, channels, 3, stride=1, padding=(1,1)))
 
     def forward(self, z, label):
 
