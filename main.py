@@ -36,8 +36,12 @@ parser.add_argument('--load', type=str)
 
 args = parser.parse_args()
 
-channels = 1
-width = 28
+if args.model == "fashion":
+    channels = 1
+    width = 28
+else:
+    channels = 3
+    width = 32
 
 loader = torch.utils.data.DataLoader(
     datasets.FashionMNIST('../data/', train=True, download=True,
@@ -56,8 +60,13 @@ disc_iters = 1
 #     discriminator = model_resnet.Discriminator().cuda()
 #     generator = model_resnet.Generator(Z_dim).cuda()
 # else:
-discriminator = model_mnist.Discriminator().cuda()
-generator = model_mnist.Generator(Z_dim).cuda()
+
+if args.model == "fashion":
+    discriminator = model_mnist.Discriminator().cuda()
+    generator = model_mnist.Generator(Z_dim).cuda()
+else:
+    discriminator = model.Discriminator().cuda()
+    generator = model.Generator(Z_dim).cuda()
 
 if args.load is not None:
     cp_disc = torch.load(os.path.join(args.checkpoint_dir, 'disc_{}'.format(args.load)))
