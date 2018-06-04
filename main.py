@@ -27,7 +27,7 @@ num_classes = 10
 batch_size_mult = 10
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--batch_size', type=int, default=64)
+parser.add_argument('--batch_size', type=int, default=32)
 parser.add_argument('--lr_gen', type=float, default=1e-4)
 parser.add_argument('--lr_disc', type=float, default=2e-4)
 parser.add_argument('--loss', type=str, default='hinge')

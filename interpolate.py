@@ -46,7 +46,7 @@ z = torch.randn(64, Z_dim).cuda()
 
 
 for i in range(num_classes):
-	for x in np.arange(0, 1, 0.01):
+	for x in np.arange(0, 1, 0.05):
 
 		# smooth polynomial to spend more time at endpoints of classes
 		# xp = x**9 - x**8 / 2 + 6 * x**7 / 7 - 2 * x**6 / 3 + x**5 / 5
