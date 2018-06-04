@@ -18,9 +18,28 @@ CIFAR-10
 ![class interpolation](https://github.com/christiancosgrove/pytorch-sagan/blob/master/interpolate.gif?raw=true)
 
 
-Discriminator self-attention visualization
 
-![attention interpolation](https://github.com/christiancosgrove/pytorch-sagan/blob/master/attention.gif?raw=true)
+## Fashion-MNIST Class-Conditional Samples (preliminary)
+![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_0.png?raw=true)
+
+![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_1.png?raw=true)
+
+![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_2.png?raw=true)
+
+![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_3.png?raw=true)
+
+![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_4.png?raw=true)
+
+![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_5.png?raw=true)
+
+![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_6.png?raw=true)
+
+![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_7.png?raw=true)
+
+![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_8.png?raw=true)
+
+![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_9.png?raw=true)
+
 
 ## CIFAR-10 Class-Conditional Samples (preliminary)
 ![airplane](https://github.com/christiancosgrove/pytorch-sagan/blob/master/1980_00.png?raw=true)
