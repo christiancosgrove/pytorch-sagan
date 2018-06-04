@@ -8,8 +8,10 @@ from torch.optim.lr_scheduler import ExponentialLR
 from torchvision import datasets, transforms
 from torch.autograd import Variable
 import model
+import model_mnist
 import os
 import numpy as np
+
 
 import scipy.misc
 from glob import glob
@@ -28,8 +30,8 @@ args = parser.parse_args()
 
 num_classes = 10
 Z_dim = 128
-generator = model.Generator(Z_dim).cuda()
-discriminator = model.Discriminator().cuda()
+generator = model_mnist.Generator(Z_dim).cuda()
+discriminator = model_mnist.Discriminator().cuda()
 
 cp_gen = torch.load(os.path.join(args.checkpoint_dir, 'gen_{}'.format(args.load)))
 generator.load_state_dict(cp_gen)
@@ -47,7 +49,8 @@ for i in range(num_classes):
 	for x in np.arange(0, 1, 0.01):
 
 		# smooth polynomial to spend more time at endpoints of classes
-		xp = x**9 - x**8 / 2 + 6 * x**7 / 7 - 2 * x**6 / 3 + x**5 / 5
+		# xp = x**9 - x**8 / 2 + 6 * x**7 / 7 - 2 * x**6 / 3 + x**5 / 5
+		xp = x
 
 		# interpolated one-hot labels to be passed into conditional batch norm layer
 		label = labels[(i + 1) % num_classes] * xp + labels[i] * (1.0 - xp)
@@ -73,7 +76,8 @@ for i in range(num_classes):
 			image = aimage.expand_as(image)
 
 
-		npimage = image.view(8, 8, 3, 32, 32).permute(2, 0, 3, 1, 4).contiguous().view(3, 8 * 32, 8 * 32)
+		# npimage = image.view(8, 8, 3, 32, 32).permute(2, 0, 3, 1, 4).contiguous().view(3, 8 * 32, 8 * 32)
+		npimage = image.view(8, 8, 1, 28, 28).permute(2, 0, 3, 1, 4).contiguous().view(1, 8 * 28, 8 * 28).expand(3, -1, -1)
 		npimage = npimage.cpu().detach().numpy()
 
 		scipy.misc.imsave('images/test{0:.2f}.png'.format(i + x), npimage.transpose((1,2,0)))

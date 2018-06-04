@@ -12,6 +12,7 @@ from torchvision import datasets, transforms
 from torch.autograd import Variable
 import model
 import model_resnet
+import model_mnist
 
 import numpy as np
 import matplotlib
@@ -28,18 +29,18 @@ batch_size_mult = 10
 parser = argparse.ArgumentParser()
 parser.add_argument('--batch_size', type=int, default=32)
 parser.add_argument('--lr_gen', type=float, default=1e-4)
-parser.add_argument('--lr_disc', type=float, default=4e-4)
+parser.add_argument('--lr_disc', type=float, default=2e-4)
 parser.add_argument('--loss', type=str, default='hinge')
 parser.add_argument('--checkpoint_dir', type=str, default='checkpoints')
 parser.add_argument('--load', type=str)
 
 args = parser.parse_args()
 
-channels = 3
-width = 32
+channels = 1
+width = 28
 
 loader = torch.utils.data.DataLoader(
-    datasets.CIFAR10('../data/', train=True, download=True,
+    datasets.FashionMNIST('../data/', train=True, download=True,
         transform=transforms.Compose([
             transforms.ToTensor(),
             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])),
@@ -48,15 +49,15 @@ loader = torch.utils.data.DataLoader(
 
 Z_dim = 128
 #number of updates to discriminator for every update to generator 
-disc_iters = 1
+disc_iters = 3
 
 # discriminator = torch.nn.DataParallel(Discriminator()).cuda() # TODO: try out multi-gpu training
 # if args.model == 'resnet':
 #     discriminator = model_resnet.Discriminator().cuda()
 #     generator = model_resnet.Generator(Z_dim).cuda()
 # else:
-discriminator = model.Discriminator().cuda()
-generator = model.Generator(Z_dim).cuda()
+discriminator = model_mnist.Discriminator().cuda()
+generator = model_mnist.Generator(Z_dim).cuda()
 
 if args.load is not None:
     cp_disc = torch.load(os.path.join(args.checkpoint_dir, 'disc_{}'.format(args.load)))
@@ -104,6 +105,7 @@ def train(epoch):
         # update generator
         optim_disc.zero_grad()
         optim_gen.zero_grad()
+
         gen_loss = -discriminator(generator(z, rand_c_onehot[0]), rand_c_onehot).mean()
         gen_loss.backward()
         optim_gen.step()
@@ -130,7 +132,7 @@ def evaluate(epoch):
         fixed_c_onehot.zero_()
         fixed_c_onehot[:, fixed_class] = 1
 
-        samples = generator(fixed_z, fixed_c_onehot[0]).cpu().detach().numpy()[:64]
+        samples = generator(fixed_z, fixed_c_onehot[0]).expand(-1, 3, -1, -1).cpu().detach().numpy()[:64]
         fig = plt.figure(figsize=(8, 8))
         gs = gridspec.GridSpec(8, 8)
         gs.update(wspace=0.05, hspace=0.05)
@@ -153,7 +155,7 @@ os.makedirs(args.checkpoint_dir, exist_ok=True)
 
 for epoch in range(2000):
     train(epoch)
-    if epoch % 20 == 0:
+    if epoch % 10 == 0:
         evaluate(epoch)
         torch.save(discriminator.state_dict(), os.path.join(args.checkpoint_dir, 'disc_{}'.format(epoch)))
         torch.save(generator.state_dict(), os.path.join(args.checkpoint_dir, 'gen_{}'.format(epoch)))
