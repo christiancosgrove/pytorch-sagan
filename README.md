@@ -20,25 +20,25 @@ CIFAR-10
 
 
 ## Fashion-MNIST Class-Conditional Samples (preliminary)
-![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_0.png?raw=true)
+![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_00.png?raw=true)
 
-![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_1.png?raw=true)
+![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_01.png?raw=true)
 
-![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_2.png?raw=true)
+![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_02.png?raw=true)
 
-![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_3.png?raw=true)
+![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_03.png?raw=true)
 
-![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_4.png?raw=true)
+![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_04.png?raw=true)
 
-![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_5.png?raw=true)
+![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_05.png?raw=true)
 
-![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_6.png?raw=true)
+![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_06.png?raw=true)
 
-![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_7.png?raw=true)
+![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_07.png?raw=true)
 
-![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_8.png?raw=true)
+![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_08.png?raw=true)
 
-![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_9.png?raw=true)
+![](https://github.com/christiancosgrove/pytorch-sagan/blob/master/240_09.png?raw=true)
 
 
 ## CIFAR-10 Class-Conditional Samples (preliminary)
